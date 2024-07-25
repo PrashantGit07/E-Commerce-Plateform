@@ -3,6 +3,7 @@ import ConnectDb from "./Config/ConnectDb.js";
 import dotenv from "dotenv"
 import morgan from "morgan";
 import authRoute from "./routes/AuthRoute.js";
+import bodyParser from "body-parser";
 dotenv.config();
 //rest objects
 
@@ -13,12 +14,13 @@ ConnectDb();
 
 
 //middleware
+app.use(bodyParser.json());
 app.use(express.json())
 app.use(morgan("dev"))
 
 //rest api
 
-app.use('/api/register', authRoute);
+app.use('/api/auth', authRoute);
 app.get('/', (req, res) => {
     res.send({
         message: "Welcome to the My Project"
