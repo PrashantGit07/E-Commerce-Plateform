@@ -8,8 +8,8 @@ dotnev.config()
 
 export const Register = async (req, res) => {
     try {
-        const { name, email, password, address, phone } = req.body;
-        if (!email || !password || !address || !phone || !name) {
+        const { name, email, password, address, phone, answer } = req.body;
+        if (!email || !password || !address || !phone || !name || !answer) {
             return res.status(400).send({ error: "Please enter all required fields" });
         }
 
@@ -23,7 +23,7 @@ export const Register = async (req, res) => {
         const hashedPassword = await hashPassword(password);
 
         // Save the user
-        const user = new User({ email, name, address, phone, password: hashedPassword });
+        const user = new User({ email, name, answer, address, phone, password: hashedPassword });
         await user.save();
 
         res.status(201).send({
@@ -82,7 +82,8 @@ export const Login = async (req, res) => {
             user: {
                 name: user.name,
                 email: user.email,
-                address: user.address
+                address: user.address,
+                phone: user.phone
             },
             token
         });
@@ -91,3 +92,36 @@ export const Login = async (req, res) => {
         res.status(500).send({ error: "Internal Server Error" });
     }
 };
+
+
+
+
+
+export const ForgotPassword = async (req, res) => {
+
+    try {
+        const { email, newPassword, answer } = req.body
+        if (!email || !newPassword || !answer) {
+            res.status(400).send({ message: "Please enter required field" })
+        }
+
+        //checking user
+        const user = await User.findOne({ email, answer })
+        if (!user) {
+            res.status(404).send({ message: "User not found" })
+        }
+
+        //update password
+        const newHashedPassword = await hashPassword(newPassword)
+        await User.findByIdAndUpdate(user._id, { password: newHashedPassword })
+
+        res.status(200).send({
+            success: true,
+            message: 'Password updated successfully',
+        })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+}

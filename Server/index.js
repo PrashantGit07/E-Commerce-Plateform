@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import morgan from "morgan";
 import authRoute from "./routes/AuthRoute.js";
 import bodyParser from "body-parser";
+import cors from "cors"
 dotenv.config();
 //rest objects
 
@@ -17,7 +18,7 @@ ConnectDb();
 app.use(bodyParser.json());
 app.use(express.json())
 app.use(morgan("dev"))
-
+app.use(cors())
 //rest api
 
 app.use('/api/auth', authRoute);

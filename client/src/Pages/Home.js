@@ -1,8 +1,13 @@
 import React from 'react'
 
+//checking if context api is working properly or not
+import { useAuth } from '../Context/AuthContext'
 const Home = () => {
+    const [auth, setAuth] = useAuth()
     return (
-        <div>Home</div>
+        <div>
+            <pre>{JSON.stringify(auth, null, 4)}</pre>
+        </div>
     )
 }
 

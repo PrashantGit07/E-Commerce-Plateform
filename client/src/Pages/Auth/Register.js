@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
+
 const Register = () => {
     const [formData, setFormData] = useState({
-        name: '', email: '', password: '', address: '', phone: ''
-    })
+        name: '', email: '', password: '', address: '', phone: '', answer: '',
+    });
 
-    const HandleChange = (e) => {
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
@@ -15,47 +19,43 @@ const Register = () => {
         });
     };
 
-    const HandleSubmit = (e) => {
-        e.preventDefault()
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         console.log(formData);
 
-        const success = true
+        try {
+            const response = await axios.post("http://localhost:8000/api/auth/register", formData);
 
-        if (success) {
-            toast.success("Registration successfully done!", {
+            if (response.status === 200 || response.status === 201) {
+                // Clear the form
+                setFormData({ name: '', email: '', password: '', address: '', phone: '', answer: '' });
+
+                // Show success toast and navigate on close
+                toast.success("Registration successfully done!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    onClose: () => navigate("/login"),
+                    className: 'toast-success'
+                });
+            } else {
+                throw new Error("Registration failed");
+            }
+        } catch (error) {
+            toast.error("Registration failed. Please try again.", {
                 position: "top-right",
                 autoClose: 3000,
-                hideProgressBar: true,
+                hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                progress: undefined,
-                className: 'toast-success'
-            })
-            setTimeout(() => {
-                navigate("/login")
-            }, 2000)
+                className: 'toast-error'
+            });
         }
-        else {
-            toast.error("Registration successfully done!", {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                className: 'toast-success'
-            })
-        }
-
-    }
-
-
-
-    const navigate = useNavigate();
-
-
+    };
 
     return (
         <div className="flex min-h-screen flex-col justify-center px-6 py-4 lg:px-8">
@@ -66,7 +66,7 @@ const Register = () => {
             </div>
 
             <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
-                <form className="space-y-4" action="#" method="POST" onSubmit={HandleSubmit}>
+                <form className="space-y-4" action="#" method="POST" onSubmit={handleSubmit}>
                     <div>
                         <label
                             htmlFor="name"
@@ -82,7 +82,7 @@ const Register = () => {
                                 autoComplete="name"
                                 required
                                 value={formData.name}
-                                onChange={HandleChange}
+                                onChange={handleChange}
                                 className="block  pl-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
@@ -103,10 +103,11 @@ const Register = () => {
                                 autoComplete="email"
                                 required
                                 value={formData.email}
-                                onChange={HandleChange}
+                                onChange={handleChange}
                                 className="block pl-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
+
                     </div>
 
                     <div>
@@ -123,9 +124,8 @@ const Register = () => {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-
                                 value={formData.password}
-                                onChange={HandleChange}
+                                onChange={handleChange}
                                 className="block w-full pl-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
@@ -146,7 +146,7 @@ const Register = () => {
                                 autoComplete="address"
                                 required
                                 value={formData.address}
-                                onChange={HandleChange}
+                                onChange={handleChange}
                                 className="block w-full pl-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
@@ -167,16 +167,36 @@ const Register = () => {
                                 autoComplete="phone"
                                 required
                                 value={formData.phone}
-                                onChange={HandleChange}
+                                onChange={handleChange}
                                 className="block w-full pl-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
-                    </div>
 
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="phone"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                            Enter your favourite sports
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                id="answer"
+                                name="answer"
+                                type="text"
+                                autoComplete="answer"
+                                required
+                                placeholder='secret answer'
+                                value={formData.answer}
+                                onChange={handleChange}
+                                className="block pl-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                        </div>
+                    </div>
                     <div>
                         <button
                             type="submit"
-
                             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             Create
