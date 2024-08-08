@@ -9,7 +9,13 @@ router.post('/login', Login)
 router.get('/test', VerifyToken, AdminAccess, testController)
 
 router.post('/forgot-password', ForgotPassword)
+
+
 router.get('/user-auth', VerifyToken, (req, res) => {
+    res.status(200).send({ ok: true });
+})
+
+router.get('/admin-auth', VerifyToken, (req, res) => {
     res.status(200).send({ ok: true });
 })
 export default router
