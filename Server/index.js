@@ -3,6 +3,7 @@ import ConnectDb from "./Config/ConnectDb.js";
 import dotenv from "dotenv"
 import morgan from "morgan";
 import authRoute from "./routes/AuthRoute.js";
+import categoryRoute from "./routes/CategoryRoutes.js"
 import bodyParser from "body-parser";
 import cors from "cors"
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(cors())
 //rest api
 
 app.use('/api/auth', authRoute);
+app.use('/api/category', categoryRoute)
 app.get('/', (req, res) => {
     res.send({
         message: "Welcome to the My Project"
