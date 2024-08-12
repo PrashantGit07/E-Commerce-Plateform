@@ -1,5 +1,5 @@
 import express from "express"
-import { AdminAccess, VerifyToken } from "../middlewares/AuthMiddleware.js"
+import { AdminAccess, VerifyToken } from "../middlewares/authMiddleware.js"
 import { CategoryController } from "../controller/CategoryController.js"
 import { UpdateCategory } from "../controller/CategoryController.js"
 import { getAllCategories } from "../controller/CategoryController.js"
