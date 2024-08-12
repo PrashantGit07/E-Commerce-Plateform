@@ -1,6 +1,6 @@
 import express from "express";
 
-import { AdminAccess, VerifyToken } from "../middlewares/authMiddleware.js";
+import { AdminAccess, VerifyToken } from "../middlewares/AuthMiddleware.js"
 import formidable from "express-formidable";
 import { createProductController, deleteProductController, getProductController, getSingleProductController, productPhotoController, updateProductController } from "../controller/ProductController.js";
 
