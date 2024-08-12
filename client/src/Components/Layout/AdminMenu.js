@@ -1,27 +1,23 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import CreateCategory from '../../Pages/Admin/CreateCategory';
-import CreateProduct from '../../Pages/Admin/CreateProduct';
-import UsersDetails from '../../Pages/Admin/UsersDetails';
-
 
 const AdminMenu = () => {
     return (
-        <div className="bg-white shadow-lg rounded-lg p-6 max-w-md mx-auto mt-8">
-            <ul className="space-y-4">
-                <li className="hover:bg-gray-100 rounded-md">
-                    <NavLink to="/dashboard/admin/create-category" className="block px-4 py-2">
-                        <CreateCategory />
+        <div className="p-4 max-w-md mx-auto mt-6 border border-gray-300 rounded">
+            <ul className="space-y-3">
+                <li>
+                    <NavLink to="/dashboard/admin/create-category" className="block px-3 py-2 text-gray-700 hover:text-black">
+                        Manage Category
                     </NavLink>
                 </li>
-                <li className="hover:bg-gray-100 rounded-md">
-                    <NavLink to="/dashboard/admin/create-product" className="block px-4 py-2">
-                        <CreateProduct />
+                <li>
+                    <NavLink to="/dashboard/admin/create-product" className="block px-3 py-2 text-gray-700 hover:text-black">
+                        Create Product
                     </NavLink>
                 </li>
-                <li className="hover:bg-gray-100 rounded-md">
-                    <NavLink to="/dashboard/admin/users" className="block px-4 py-2">
-                        <UsersDetails />
+                <li>
+                    <NavLink to="/dashboard/admin/users" className="block px-3 py-2 text-gray-700 hover:text-black">
+                        User Details
                     </NavLink>
                 </li>
             </ul>

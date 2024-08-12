@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { HiMenu, HiChevronDown } from 'react-icons/hi';
 import { useAuth } from '../../Context/AuthContext';
 
@@ -9,11 +9,17 @@ const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const title = "<ShopHere/>";
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         // Ensure dropdown is closed initially after login
         setDropdownOpen(false);
     }, [auth.user]);
+
+    useEffect(() => {
+        // Close the dropdown when the location changes
+        setDropdownOpen(false);
+    }, [location]);
 
     const handleLogout = () => {
         setAuth({
