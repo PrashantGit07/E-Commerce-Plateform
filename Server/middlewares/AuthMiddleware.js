@@ -51,14 +51,22 @@ import User from "../models/User.js";
 //Protected Routes token base
 export const VerifyToken = async (req, res, next) => {
     try {
-        const decode = JWT.verify(
-            req.headers.authorization,
-            process.env.JWT_SECRET
-        );
-        req.user = decode;
-        next();
+        // Extract token from Authorization header
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).send({ message: 'Unauthorized, no token' });
+        }
+
+        // Directly use the token from the header
+        const token = authHeader;
+
+        // Verify token
+        const decode = JWT.verify(token, process.env.JWT_SECRET);
+        req.user = decode; // Attach user information to request
+        next(); // Proceed to the next middleware or route handler
     } catch (error) {
-        console.log(error);
+        console.error('Token verification error:', error);
+        res.status(401).send({ message: 'Invalid or expired token' });
     }
 };
 
