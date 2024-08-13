@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { HiMenu, HiChevronDown } from 'react-icons/hi';
+import { MenuOutlined, DownOutlined } from '@ant-design/icons';
+
 import { useAuth } from '../../Context/AuthContext';
 
 const Header = () => {
@@ -12,12 +13,10 @@ const Header = () => {
     const location = useLocation();
 
     useEffect(() => {
-        // Ensure dropdown is closed initially after login
         setDropdownOpen(false);
     }, [auth.user]);
 
     useEffect(() => {
-        // Close the dropdown when the location changes
         setDropdownOpen(false);
     }, [location]);
 
@@ -27,13 +26,13 @@ const Header = () => {
         });
         localStorage.removeItem('auth');
         navigate("/login");
-        setDropdownOpen(false);  // Close the dropdown after logout
+        setDropdownOpen(false);
     };
 
     const handleDashboard = () => {
         const dashboardRoute = auth.user.role === 1 ? "/dashboard/admin" : "/dashboard/user";
         navigate(dashboardRoute);
-        setDropdownOpen(false);  // Close the dropdown after navigation
+        setDropdownOpen(false);
     };
 
     return (
@@ -47,7 +46,7 @@ const Header = () => {
                     <div className="relative">
                         <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-white flex items-center space-x-1">
                             <span>{auth.user.name}</span>
-                            <HiChevronDown />
+                            <DownOutlined />
                         </button>
                         {dropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
@@ -70,7 +69,7 @@ const Header = () => {
 
             <div className='md:hidden flex items-center'>
                 <button onClick={() => setIsOpen(!isOpen)}>
-                    <HiMenu className='text-white' size={24} />
+                    <MenuOutlined className='text-white' size={24} />
                 </button>
             </div>
 
@@ -81,7 +80,7 @@ const Header = () => {
                         <div className="relative">
                             <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-white flex items-center space-x-1">
                                 <span>{auth.user.name}</span>
-                                <HiChevronDown />
+                                <DownOutlined />
                             </button>
                             {dropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
