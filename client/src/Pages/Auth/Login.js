@@ -35,7 +35,11 @@ const Login = () => {
                     user: response.data.user,
                     token: response.data.token,
                 });
-                localStorage.setItem('auth', JSON.stringify(response.data));
+                localStorage.setItem('auth', JSON.stringify({
+                    user: response.data.user,
+                    token: response.data.token,
+                }));
+                console.log(response.data.token)
                 toast.success("Login successful!", {
                     position: "top-right",
                     autoClose: 3000,
