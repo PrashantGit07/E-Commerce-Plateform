@@ -13,20 +13,17 @@ const CreateCategory = () => {
     };
 
     const token = getToken();
-    console.log("Token:", token); // Debugging token value
 
     // Fetch all categories
     const getAllCategory = useCallback(async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/category/get-category', {
                 headers: {
-                    Authorization: token, // Use token directly
+                    Authorization: token,
                 },
             });
-            console.log("Categories response:", response.data); // Log response data
             if (response.status === 200) {
-                console.log("Setting categories state:", response.data.data); // Debugging message
-                setCategories(response.data.data); // Set categories state with the data field
+                setCategories(response.data.data);
             }
         } catch (e) {
             console.log("Error fetching categories:", e);
@@ -42,20 +39,41 @@ const CreateCategory = () => {
                 { name },
                 {
                     headers: {
-                        Authorization: token, // Use token directly
+                        Authorization: token,
                     },
                 }
             );
-            if (response.status === 200) {
-                console.log("Category created successfully"); // Debugging message
-                setName(""); // Clear the input field after successful creation
-                const updatedCategories = [...categories, response.data.data]; // Add new category to the categories state
-                setCategories(updatedCategories); // Update categories state
+            if (response.status === 201) {
+                setName(""); // Clear the input field
+                console.log("Category created successfully");
+                getAllCategory(); // Fetch the updated list of categories after adding a new one
             }
         } catch (e) {
             console.error("Something went wrong in the input form:", e.response?.data || e.message);
         }
     };
+
+
+    //Handle delete category
+
+    const HandleDelete = async (id) => {
+        try {
+            const response = await axios.delete(`http://localhost:8000/api/category/delete-category/${id}`, {
+                headers: {
+                    Authorization: token,
+                }
+            })
+            if (response.status === 200) {
+                setCategories(categories.filter(category => category._id !== id))
+                console.log("Category deleted successfully");
+                getAllCategory();
+            }
+        }
+        catch (e) {
+            console.error("Something went wrong in the input form:", e.response?.data || e.message);
+
+        }
+    }
 
     // Fetch categories on component mount
     useEffect(() => {
@@ -89,7 +107,9 @@ const CreateCategory = () => {
                                 <button className="text-indigo-600 hover:text-indigo-900 font-bold">
                                     Edit
                                 </button>
-                                <button className="text-red-600 hover:text-red-900 font-bold ml-4">
+                                <button className="text-red-600 hover:text-red-900 font-bold ml-4"
+                                    onClick={() => HandleDelete(c._id)}
+                                >
                                     Delete
                                 </button>
                             </td>
