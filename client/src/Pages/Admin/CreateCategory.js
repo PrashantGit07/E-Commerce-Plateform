@@ -75,6 +75,19 @@ const CreateCategory = () => {
         }
     }
 
+    const HandleEdit = (id) => {
+        try {
+            const response = axios.put(`http://localhost:8000/api/category/update-category/${id}` , {
+                headers:{
+                    Authorization:token,
+                }
+            })
+        }
+        catch (e) {
+            console.error("Something went wrong in the input form:", e.response?.data || e.message);
+
+        }
+    }
     // Fetch categories on component mount
     useEffect(() => {
         getAllCategory();
@@ -104,7 +117,9 @@ const CreateCategory = () => {
                                 {c.name}
                             </td>
                             <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
-                                <button className="text-indigo-600 hover:text-indigo-900 font-bold">
+                                <button className="text-indigo-600 hover:text-indigo-900 font-bold"
+                                    onClick={() => HandleEdit(c._id)}
+                                >
                                     Edit
                                 </button>
                                 <button className="text-red-600 hover:text-red-900 font-bold ml-4"
@@ -118,7 +133,7 @@ const CreateCategory = () => {
                 </tbody>
             </table>
         </div>
-    );
+    ); 
 };
 
 export default CreateCategory;
