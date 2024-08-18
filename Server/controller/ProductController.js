@@ -1,7 +1,7 @@
 import productModel from "../models/Product.js";
 import fs from "fs";
 import slugify from "slugify";
-
+import mongoose from "mongoose"
 export const createProductController = async (req, res) => {
     try {
         const { name, description, price, category, quantity, shipping } =
@@ -91,24 +91,39 @@ export const getSingleProductController = async (req, res) => {
         });
     }
 };
-
-// get photo
 export const productPhotoController = async (req, res) => {
     try {
-        const product = await productModel.findById(req.params.pid).select("photo");
-        if (product.photo.data) {
+        const productId = req.params.pid.trim();
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).send({
+                success: false,
+                message: "Invalid product ID format",
+            });
+        }
+
+        const product = await productModel.findById(productId).select("photo");
+
+        if (product?.photo?.data) {
             res.set("Content-type", product.photo.contentType);
             return res.status(200).send(product.photo.data);
+        } else {
+            return res.status(404).send({
+                success: false,
+                message: "Photo not found",
+            });
         }
     } catch (error) {
         console.log(error);
         res.status(500).send({
             success: false,
-            message: "Erorr while getting photo",
+            message: "Error while getting photo",
             error,
         });
     }
 };
+
 
 //delete controller
 export const deleteProductController = async (req, res) => {
