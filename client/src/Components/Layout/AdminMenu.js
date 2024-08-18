@@ -20,6 +20,12 @@ const AdminMenu = () => {
                         User Details
                     </NavLink>
                 </li>
+
+                <li>
+                    <NavLink to="/dashboard/admin/products" className="block px-3 py-2 text-gray-700 hover:text-black">
+                        Proucts
+                    </NavLink>
+                </li>
             </ul>
         </div>
     );

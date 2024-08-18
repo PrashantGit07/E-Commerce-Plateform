@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useNavigate, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from "react-router-dom"
 import axios from "axios";
 
 const CreateProduct = () => {
@@ -9,7 +10,7 @@ const CreateProduct = () => {
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
     const [quantity, setQuantity] = useState("");
-    const [shipping, setShipping] = useState("");
+    const [shipping, setShipping] = useState(false);
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
 
@@ -44,13 +45,18 @@ const CreateProduct = () => {
             formData.append('price', price);
             formData.append('quantity', quantity);
             formData.append('shipping', shipping);
+            formData.append('category', selectedCategory)
             if (photo) {
                 formData.append('photo', photo);
             }
-            const response = await axios.post("http://localhost:8000/api/product/create-product", formData)
-            if (response.status === 200) {
+            const response = await axios.post("http://localhost:8000/api/product/create-product", formData, {
+                headers: {
+                    Authorization: token
+                }
+            })
+            if (response.status === 201) {
                 console.log("Product created successfully")
-
+                console.log(response);
                 navigate("/dashboard/admin/products");
             }
         }
@@ -73,6 +79,10 @@ const CreateProduct = () => {
 
     return (
         <div className="max-w-4xl mx-auto my-6 p-6 bg-white shadow-lg rounded-lg">
+            <button onClick={() => navigate("/dashboard/admin")} className="px-6 py-3 font-semibold text-blue-700 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">
+                Back
+            </button>
+
             <h1 className="text-2xl font-bold mb-4">Create Product</h1>
 
             <select
@@ -109,11 +119,11 @@ const CreateProduct = () => {
                         <img
                             src={photoPreview}
                             alt='product-photo'
-                            height={"200px"}
-                            className="object-cover"
+                            className="w-40 h-40 object-cover rounded-lg border border-gray-300"
                         />
                     )}
                 </div>
+
             </div>
 
             <div className="mb-4">
@@ -163,12 +173,12 @@ const CreateProduct = () => {
                     className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     <option value="" disabled>Select Shipping Option</option>
-                    <option value='free'>Free Shipping</option>
-                    <option value='paid'>Paid Shipping</option>
+                    <option value='true'>Yes</option>
+                    <option value='false'>No</option>
                 </select>
             </div>
 
-            <button className="inline-block py-2 px-4 border border-gray-300 rounded-lg text-white cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition duration-300 ease-in-out" onChange={handleCreate}>Create Product</button>
+            <button className="inline-block py-2 px-4 border border-gray-300 rounded-lg text-white cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition duration-300 ease-in-out" onClick={handleCreate}>Create Product</button>
         </div>
     );
 };

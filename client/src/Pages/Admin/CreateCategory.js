@@ -2,13 +2,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import InputCategory from '../../Components/CategoryForm/InputCategory';
-
+import { useNavigate } from 'react-router-dom';
 const CreateCategory = () => {
     const [categories, setCategories] = useState([]);
     const [name, setName] = useState("");
     const [categoryID, setCategoryID] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
+    const navigate = useNavigate()
     // Function to retrieve the token from localStorage
     const getToken = () => {
         const authData = localStorage.getItem('auth');
@@ -127,8 +128,13 @@ const CreateCategory = () => {
         getAllCategory();
     }, [getAllCategory]);
 
+    //onClick={() =>navigate("/dashboard/admin")}
     return (
         <div className="max-w-4xl mx-auto my-6 p-6 bg-white shadow-lg rounded-lg">
+            <button onClick={() => navigate("/dashboard/admin")} className="px-6 py-3 font-semibold text-blue-700 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition duration-300">
+                Back
+            </button>
+
             <h1 className="text-2xl font-bold mb-4">Manage Categories</h1>
             <div>
                 <InputCategory handleSubmit={handleSubmit} value={name} setValue={setName} isEditing={isEditing} handleCancel={handleCancel} />
