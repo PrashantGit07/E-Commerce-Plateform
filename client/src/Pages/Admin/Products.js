@@ -29,8 +29,19 @@ const Products = () => {
         getAllProducts();
     }, [getAllProducts]);
 
+
     return (
+
         <div className="p-6">
+
+            <button
+                onClick={() => navigate("/dashboard/admin")}
+                className='button-back'
+            >
+                Back
+            </button>
+
+
             <h1 className="text-3xl font-bold mb-6">Products</h1>
             {loading ? (
                 <ProductLoader /> // Show loader while loading is true
@@ -67,13 +78,14 @@ const Products = () => {
                                     +
                                 </button>
                             </div>
-                            <NavLink to="/dashboard/admin/update-product">
+                            <NavLink to={`/dashboard/admin/update-product/${p.slug}`}>
                                 <button className="mt-4 px-6 py-2 font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 
                                  hover:from-purple-500 hover:to-red-500 transform hover:scale-105 transition duration-500 ease-in-out">
                                     Update Product
                                 </button>
 
                             </NavLink>
+
                         </div>
                     ))}
 
