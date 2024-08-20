@@ -1,28 +1,40 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from "axios";
+import axios from 'axios';
+import { Price } from '../Components/Price';
+import { Link, useNavigate } from 'react-router-dom';
+import ReactPaginate from 'react-paginate';
 
 const Home = () => {
+    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedPrice, setSelectedPrice] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0);
+    const productsPerPage = 6;
 
-    // Function to fetch products
+    // Fetch products
     const getAllProducts = useCallback(async () => {
         try {
             const response = await axios.get("http://localhost:8000/api/product/get-product");
             if (response.status === 200) {
                 console.log("Products fetched successfully");
-                setProducts(response?.data?.products || []);
+                const allProducts = response?.data?.products || [];
+                setProducts(allProducts);
+                setFilteredProducts(allProducts); // Initially show all products
             } else {
                 console.error("Failed to fetch products:", response.statusText);
             }
         } catch (e) {
             console.error("Error fetching products:", e);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
-    // Function to fetch categories
+    // Fetch categories
     const getAllCategories = async () => {
         try {
             const response = await axios.get("http://localhost:8000/api/category/get-category");
@@ -35,12 +47,43 @@ const Home = () => {
         }
     };
 
-    // Handler function for filtering products
+    // Handle category change
     const handleCategoryChange = (e) => {
         const selectedId = e.target.value;
         setSelectedCategory(selectedId);
-        const filtered = products.filter(product => product.category?._id === selectedId);
+    };
+
+    // Handle price change
+    const handlePriceChange = (e) => {
+        const selectedRange = Price.find(p => p._id.toString() === e.target.value);
+        setSelectedPrice(selectedRange);
+    };
+
+    // Filter products based on category and price
+    const filterProducts = () => {
+        let filtered = products;
+
+        if (selectedCategory) {
+            filtered = filtered.filter(p => p.category?._id === selectedCategory);
+        }
+
+        if (selectedPrice) {
+            filtered = filtered.filter(p =>
+                p.price >= selectedPrice.array[0] && p.price <= selectedPrice.array[1]
+            );
+        }
+
         setFilteredProducts(filtered);
+    };
+
+    useEffect(() => {
+        filterProducts();
+    }, [selectedCategory, selectedPrice]);
+
+    const resetFilters = () => {
+        setFilteredProducts(products);
+        setSelectedCategory("");
+        setSelectedPrice(null);
     };
 
     useEffect(() => {
@@ -48,49 +91,125 @@ const Home = () => {
         getAllCategories();
     }, [getAllProducts]);
 
-    const productsToDisplay = selectedCategory ? filteredProducts : products;
+    if (loading) {
+        return <p className="text-gray-500 text-3xl text-center font-bold font-mono">Loading...</p>;
+    }
 
+    // Pagination logic
+    const indexOfLastProduct = (currentPage + 1) * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+    const handlePageChange = (selectedPage) => {
+        setCurrentPage(selectedPage.selected);
+    };
 
     return (
         <div className="flex flex-col md:flex-row gap-8 p-6">
             {/* Categories */}
             <div className="w-full md:w-1/4">
-                <h2 className="text-lg font-semibold mb-4">Categories</h2>
-                <select
-                    className="w-full p-2 border rounded"
-                    value={selectedCategory}
-                    onChange={handleCategoryChange}
-                >
-                    <option value="">All Categories</option>
-                    {categories.map((c) => (
-                        <option key={c._id} value={c._id}>
-                            {c.name}
-                        </option>
+                <h2 className="text-xl font-semibold mb-4">Filter by Categories</h2>
+                {categories && categories.map((c) => (
+                    <div key={c._id} className=' mb-2'>
+                        <input
+                            type='checkbox'
+                            value={c._id}
+                            checked={selectedCategory === c._id}
+                            onChange={handleCategoryChange}
+                            className=' mr-2'
+                        />
+                        <label className=' font-serif text-gray-600'>{c.name}</label>
+                    </div>
+                ))}
+                <div>
+                    <button
+                        onClick={resetFilters}
+                        className='mt-6 bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 focus:outline-none'
+                    >Reset</button>
+                </div>
+
+                <div className=' mt-5'>
+                    <p className=' text-xl font-semibold mb-2'>Filter by Price</p>
+                    {Price && Price.map((p) => (
+                        <div key={p._id}>
+                            <input
+                                type='radio'
+                                name="price"
+                                value={p._id}
+                                checked={selectedPrice?._id === p._id}
+                                onChange={handlePriceChange}
+                                className='mr-2 mt-3'
+                            />
+                            <label className=' font-serif text-gray-600'>{p.name}</label>
+                        </div>
                     ))}
-                </select>
+                </div>
             </div>
 
             {/* Products */}
-            <div className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {productsToDisplay.length > 0 ? (
-                    productsToDisplay.map((p) => (
-                        <div key={p._id} className="border p-4 rounded shadow-lg">
-                            <h3 className="text-xl font-semibold mb-2">{p.name}</h3>
-                            <img
-                                src={`http://localhost:8000/api/product/product-photo/${p._id}`}
-                                alt={p.name}
-                                className="w-full h-40 object-cover mb-4"
-                            />
-                            <p className="text-gray-700 mb-2">{p.description}</p>
-                            <p className="text-gray-900 font-bold mb-2">Price: ${p.price}</p>
-                            <p className="text-gray-700 mb-2">Quantity: {p.quantity}</p>
-                            <p className="text-gray-700 mb-2">Shipping: {p.shipping ? 'Yes' : 'No'}</p>
-                            <p className="text-gray-700 mb-2">Category: {p.category?.name}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500 text-3xl text-center font-bold font-mono"> This category is under construction. Please be patient while we add more goodies!</p>
-                )}
+            <div className="w-full md:w-3/4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {currentProducts.length > 0 ? (
+                        currentProducts.map((p) => (
+                            <div key={p._id} className="border p-4 rounded shadow-lg flex flex-col justify-between">
+                                <div>
+                                    <h3 className="text-xl font-semibold mb-2">{p.name}</h3>
+                                    <img
+                                        src={`http://localhost:8000/api/product/product-photo/${p._id}`}
+                                        alt={p.name}
+                                        className="w-full h-40 object-cover mb-4"
+                                    />
+                                    <p className="text-gray-700 mb-2">{p.description.substring(0, 29)}...</p>
+                                    <p className="text-gray-900 font-bold mb-2">Price: ${p.price}</p>
+                                    <p className="text-gray-700 mb-2">Quantity: {p.quantity}</p>
+                                    <p className="text-gray-700 mb-2">Shipping: {p.shipping ? 'Yes' : 'No'}</p>
+                                    <p className="text-gray-700 mb-2">Category: {p.category?.name}</p>
+                                </div>
+                                <div className="flex space-x-4 mt-4">
+                                    <button className="bg-blue-500 text-white flex-grow px-6 py-3 rounded-full hover:bg-blue-600 focus:outline-none shadow-md transform transition-transform hover:scale-105">
+                                        Add to Cart
+                                    </button>
+                                    <Link
+                                        className="bg-white text-blue-500 border border-blue-500 flex-grow px-6 py-3 rounded-full hover:bg-blue-100 focus:outline-none shadow-md transform transition-transform hover:scale-105"
+                                        to={"/productDetails"}
+                                        state={{ product: p }}
+                                    >
+                                        Details
+                                    </Link>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500 text-3xl text-center font-bold font-mono">
+                            Oops! Looks like we've run out of products in this category and price range.
+                            But don't worry, our elves are working hard to restock. Check back soon!
+                        </p>
+                    )}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center mt-6">
+                    <ReactPaginate
+                        previousLabel={'Previous'}
+                        nextLabel={'Next'}
+                        breakLabel={'...'}
+                        pageCount={totalPages}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={handlePageChange}
+                        containerClassName={'pagination'}
+                        pageClassName={'page-item'}
+                        pageLinkClassName={'page-link'}
+                        previousClassName={'page-item'}
+                        previousLinkClassName={'page-link'}
+                        nextClassName={'page-item'}
+                        nextLinkClassName={'page-link'}
+                        breakClassName={'page-item'}
+                        breakLinkClassName={'page-link'}
+                        activeClassName={'active'}
+                    />
+                </div>
             </div>
         </div>
     );

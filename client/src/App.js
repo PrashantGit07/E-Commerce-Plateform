@@ -21,6 +21,7 @@ import UserProfile from "./Pages/user/UserProfile.js";
 import UserOrders from "./Pages/user/UserOrders.js";
 import Products from "./Pages/Admin/Products.js";
 import UpdateProduct from "./Pages/Admin/UpdateProduct.js";
+import ProductDetails from "./Pages/ProductDetails.js";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/*" element={<PageNotFound />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/productDetails" element={<ProductDetails />} />
           <Route path="/dashboard" element={<PrivateRoute />}>
             <Route path="user" element={<Dashboard />} />
             <Route path="user/profile" element={<UserProfile />} />
