@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { MenuOutlined, DownOutlined } from '@ant-design/icons';
-
+import logo from "../../Assets/logo.png"
 import { useAuth } from '../../Context/AuthContext';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [auth, setAuth] = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const title = "<ShopHere/>";
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -37,8 +37,8 @@ const Header = () => {
 
     return (
         <>
-            <nav className='fixed top-0 left-0 right-0 h-16 bg-gray-600 w-full flex items-center justify-between px-4 z-50'>
-                <div className='font-extrabold text-white'>{title}</div>
+            <nav className='fixed top-0 left-0 right-0 h-16 bg-blue-500 rounded-md text-white w-full flex items-center justify-between px-4 z-50 shadow-blue-600 shadow-md'>
+                <img src={logo} className="w-12 h-auto cursor-pointer" alt="Logo" onClick={() => navigate("/")} />
 
                 <div className='hidden md:flex space-x-10'>
                     <NavLink to="/" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Home</NavLink>
@@ -65,7 +65,7 @@ const Header = () => {
                     )}
 
                     <NavLink to="/categories" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Category</NavLink>
-                    <NavLink to="/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart(0)</NavLink>
+                    <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart(0)</NavLink>
                 </div>
 
                 <div className='md:hidden flex items-center'>
@@ -98,7 +98,7 @@ const Header = () => {
                             <NavLink to="/login" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Login</NavLink>
                         )}
                         <NavLink to="/categories" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Category</NavLink>
-                        <NavLink to="/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Cart(0)</NavLink>
+                        <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Cart(0)</NavLink>
                     </div>
                 )}
             </nav>

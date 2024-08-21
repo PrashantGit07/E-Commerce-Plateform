@@ -4,6 +4,7 @@ import { Price } from '../Components/Price';
 import { Link, useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 
+import { debounce } from "lodash"
 const Home = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
@@ -13,6 +14,7 @@ const Home = () => {
     const [selectedPrice, setSelectedPrice] = useState(null);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("")
     const productsPerPage = 6;
 
     // Fetch products
@@ -59,31 +61,42 @@ const Home = () => {
         setSelectedPrice(selectedRange);
     };
 
-    // Filter products based on category and price
-    const filterProducts = () => {
-        let filtered = products;
+    const debouncedFilterProducts = useCallback(
+        debounce(() => {
+            let filtered = products;
 
-        if (selectedCategory) {
-            filtered = filtered.filter(p => p.category?._id === selectedCategory);
-        }
+            if (selectedCategory) {
+                filtered = filtered.filter(p => p.category?._id === selectedCategory);
+            }
 
-        if (selectedPrice) {
-            filtered = filtered.filter(p =>
-                p.price >= selectedPrice.array[0] && p.price <= selectedPrice.array[1]
-            );
-        }
+            if (selectedPrice) {
+                filtered = filtered.filter(p =>
+                    p.price >= selectedPrice.array[0] && p.price <= selectedPrice.array[1]
+                );
+            }
 
-        setFilteredProducts(filtered);
-    };
+            if (searchQuery) {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    p.description.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            setFilteredProducts(filtered);
+        }, 700), // Adjust the debounce delay as needed
+        [products, selectedCategory, selectedPrice, searchQuery] // Dependencies
+    );
 
     useEffect(() => {
-        filterProducts();
-    }, [selectedCategory, selectedPrice]);
+        debouncedFilterProducts();
+    }, [searchQuery, selectedCategory, selectedPrice, products, debouncedFilterProducts]);
+
 
     const resetFilters = () => {
         setFilteredProducts(products);
         setSelectedCategory("");
         setSelectedPrice(null);
+        setSearchQuery("")
     };
 
     useEffect(() => {
@@ -108,20 +121,31 @@ const Home = () => {
     return (
         <div className="flex flex-col md:flex-row gap-8 p-6">
             {/* Categories */}
-            <div className="w-full md:w-1/4">
+            <div className="w-full md:w-1/5 flex flex-col flex-wrap">
+
+                <p className="text-xl font-semibold mb-4">Search Products</p>
+                <input
+                    type='text'
+                    value={searchQuery}
+                    placeholder='Search for products...'
+                    className='h-8 w-full border-gray-500 border-2 rounded-lg p-2 mb-2'
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+
                 <h2 className="text-xl font-semibold mb-4">Filter by Categories</h2>
                 {categories && categories.map((c) => (
-                    <div key={c._id} className=' mb-2'>
+                    <div key={c._id} className='mb-2'>
                         <input
                             type='checkbox'
                             value={c._id}
                             checked={selectedCategory === c._id}
                             onChange={handleCategoryChange}
-                            className=' mr-2'
+                            className='mr-2'
                         />
-                        <label className=' font-serif text-gray-600'>{c.name}</label>
+                        <label className='font-serif text-gray-600'>{c.name}</label>
                     </div>
                 ))}
+
                 <div>
                     <button
                         onClick={resetFilters}
@@ -129,8 +153,8 @@ const Home = () => {
                     >Reset</button>
                 </div>
 
-                <div className=' mt-5'>
-                    <p className=' text-xl font-semibold mb-2'>Filter by Price</p>
+                <div className='mt-5'>
+                    <p className='text-xl font-semibold mb-2'>Filter by Price</p>
                     {Price && Price.map((p) => (
                         <div key={p._id}>
                             <input
@@ -141,11 +165,12 @@ const Home = () => {
                                 onChange={handlePriceChange}
                                 className='mr-2 mt-3'
                             />
-                            <label className=' font-serif text-gray-600'>{p.name}</label>
+                            <label className='font-serif text-gray-600'>{p.name}</label>
                         </div>
                     ))}
                 </div>
             </div>
+
 
             {/* Products */}
             <div className="w-full md:w-3/4">
@@ -167,23 +192,23 @@ const Home = () => {
                                     <p className="text-gray-700 mb-2">Category: {p.category?.name}</p>
                                 </div>
                                 <div className="flex space-x-4 mt-4">
-                                    <button className="bg-blue-500 text-white flex-grow px-6 py-3 rounded-full hover:bg-blue-600 focus:outline-none shadow-md transform transition-transform hover:scale-105">
-                                        Add to Cart
-                                    </button>
+
+
                                     <Link
-                                        className="bg-white text-blue-500 border border-blue-500 flex-grow px-6 py-3 rounded-full hover:bg-blue-100 focus:outline-none shadow-md transform transition-transform hover:scale-105"
-                                        to={"/productDetails"}
-                                        state={{ product: p }}
+                                        className="bg-white text-blue-500 border border-blue-500 flex-grow px-6 py-3 rounded-md hover:bg-blue-100 focus:outline-none shadow-md transform transition-transform hover:scale-105"
+                                        to={`/productDetails/${p.slug}`}
+
                                     >
                                         Details
                                     </Link>
+
                                 </div>
                             </div>
                         ))
                     ) : (
                         <p className="text-gray-500 text-3xl text-center font-bold font-mono">
-                            Oops! Looks like we've run out of products in this category and price range.
-                            But don't worry, our elves are working hard to restock. Check back soon!
+                            {/* Oops! Looks like we've run out of products in this category and price range.
+                            But don't worry, our elves are working hard to restock. Check back soon! */}
                         </p>
                     )}
                 </div>
