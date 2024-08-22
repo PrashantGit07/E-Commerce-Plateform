@@ -2,6 +2,8 @@ import productModel from "../models/Product.js";
 import fs from "fs";
 import slugify from "slugify";
 import mongoose from "mongoose"
+
+import categoryModel from "../models/Category.js";
 export const createProductController = async (req, res) => {
     try {
         const { name, description, price, category, quantity, shipping } =
@@ -193,3 +195,59 @@ export const updateProductController = async (req, res) => {
 };
 
 
+export const getSimilarProduct = async (req, res) => {
+    try {
+        const { pid, cid } = req.params;
+        const products = await productModel.find({
+            category: cid,
+            _id: { $ne: pid },
+        }).select("-photo").populate("category");
+        res.status(200).send({
+            success: true,
+            message: "Similar products fetched successfully",
+            products, // Changed from `product` to `products`
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            error,
+            message: "Error in fetching similar products",
+        });
+    }
+};
+
+
+
+
+//get product by category
+
+export const getProductByCategory = async (req, res) => {
+    try {
+        // Fetch category by slug
+        const category = await categoryModel.findOne({ slug: req.params.slug });
+        if (!category) {
+            return res.status(404).send({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        // Fetch products by category ID
+        const products = await productModel.find({ category: category._id }).populate("category");
+
+        res.status(200).send({
+            success: true,
+            message: "Products by their category fetched successfully",
+            products,
+            category,
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({
+            success: false,
+            message: "Error in fetching products by category",
+            error: e.message,
+        });
+    }
+};

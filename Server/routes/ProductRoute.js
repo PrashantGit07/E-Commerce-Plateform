@@ -2,7 +2,7 @@ import express from "express";
 
 import { AdminAccess, VerifyToken } from "../middlewares/AuthMiddleware.js"
 import formidable from "express-formidable";
-import { createProductController, deleteProductController, getProductController, getSingleProductController, productPhotoController, updateProductController } from "../controller/ProductController.js";
+import { createProductController, deleteProductController, getProductByCategory, getProductController, getSimilarProduct, getSingleProductController, productPhotoController, updateProductController } from "../controller/ProductController.js";
 
 const router = express.Router();
 
@@ -34,5 +34,9 @@ router.get("/product-photo/:pid", productPhotoController);
 
 //delete rproduct
 router.delete("/delete-product/:pid", VerifyToken, AdminAccess, deleteProductController);
+
+router.get("/related-product/:pid/:cid", getSimilarProduct)
+
+router.get("/product-category/:slug", getProductByCategory)
 
 export default router;
