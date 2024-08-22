@@ -119,7 +119,7 @@ const Home = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row gap-8 p-6">
+        <div className="flex flex-col md:flex-row gap-8 p-6 mt-16">
             {/* Categories */}
             <div className="w-full md:w-1/5 flex flex-col flex-wrap">
 
