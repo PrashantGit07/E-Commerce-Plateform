@@ -6,13 +6,14 @@ import { Card, Button } from "antd"
 import { DoubleLeftOutlined } from "@ant-design/icons"
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from "react-hot-toast"
+import { useCart } from '../Context/CartContext';
 const ProductDetails = () => {
     const [product, setProduct] = useState({ _id: '', name: '', description: '', price: '', quantity: '' });
 
     const navigate = useNavigate()
     const location = useLocation()
-    const [quantity, setQuantity] = useState(1);
-
+    const [selectedQuantity, setSelectedQuantity] = useState(1);
+    const [cart, setCart] = useCart()
     const [similarProduct, setSimilarProduct] = useState([])
     const params = useParams();
 
@@ -51,17 +52,17 @@ const ProductDetails = () => {
 
 
     const increaseQuantity = () => {
-        if (product?.quantity > quantity) {
+        if (product?.quantity > selectedQuantity) {
 
-            setQuantity(prevQuantity => prevQuantity + 1);
+            setSelectedQuantity(prevQuantity => prevQuantity + 1);
         } else {
             toast.error("can not select more than available quantity of the product")
         }
     };
 
     const decreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity(prevQuantity => prevQuantity - 1);
+        if (selectedQuantity > 1) {
+            setSelectedQuantity(prevQuantity => prevQuantity - 1);
         }
     };
 
@@ -102,7 +103,7 @@ const ProductDetails = () => {
                                 >
                                     -
                                 </button>
-                                <span className="px-4 py-1 bg-white border-t border-b border-gray-300">{quantity}</span>
+                                <span className="px-4 py-1 bg-white border-t border-b border-gray-300">{selectedQuantity}</span>
                                 <button
                                     onClick={increaseQuantity}
                                     className="px-3 py-1 bg-gray-300 rounded-r hover:bg-gray-400 transition-colors"
@@ -113,6 +114,11 @@ const ProductDetails = () => {
                         </div>
                         <button
                             className="w-32 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                            onClick={() => {
+                                setCart([...cart, product, selectedQuantity])
+                                toast.success("product added successfully")
+                            }}
+
                         >
                             Add to Cart
                         </button>

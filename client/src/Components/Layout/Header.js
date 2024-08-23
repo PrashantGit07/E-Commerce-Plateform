@@ -4,10 +4,12 @@ import { MenuOutlined, DownOutlined } from '@ant-design/icons';
 import logo from "../../Assets/logo.png";
 import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
+import { useCart } from '../../Context/CartContext';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [auth, setAuth] = useAuth();
+    const [cart] = useCart()
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -124,7 +126,7 @@ const Header = () => {
                     )}
                 </div>
 
-                <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart(0)</NavLink>
+                <NavLink to="/cartPage" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart {cart?.length} </NavLink>
             </div>
 
             <div className='md:hidden flex items-center'>
