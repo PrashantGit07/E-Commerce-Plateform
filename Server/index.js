@@ -5,6 +5,7 @@ import morgan from "morgan";
 import authRoute from "./routes/AuthRoute.js";
 import ProductRoute from "./routes/ProductRoute.js";
 import categoryRoute from "./routes/CategoryRoutes.js"
+import cartRoute from "./routes/CartRoutes.js"
 import bodyParser from "body-parser";
 import cors from "cors"
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(cors())
 app.use('/api/auth', authRoute);
 app.use('/api/category', categoryRoute)
 app.use('/api/product', ProductRoute);
+app.use('/api/cart', cartRoute)
 app.get('/', (req, res) => {
     res.send({
         message: "Welcome to the My Project"
