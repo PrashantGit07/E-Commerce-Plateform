@@ -7,12 +7,12 @@ const CartContext = createContext()
 const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([])
     const [auth] = useAuth()
-    const user = auth?.user
+
     const [Error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
 
-    const userId = user?._id
-    console.log(user?._id)
+    const userId = auth?.user?._id
+    console.log(auth?.user?._id)
     const url = `http://localhost:8000/api/cart/cartItems/${userId}`
     const GetCartItems = async () => {
         try {
@@ -33,7 +33,7 @@ const CartProvider = ({ children }) => {
 
     useEffect(() => {
         GetCartItems()
-    }, [user?._id])
+    }, [auth?.user?._id])
 
     return (
         <CartContext.Provider value={[cart, loading, Error, GetCartItems]}>

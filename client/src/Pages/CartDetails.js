@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext';
 import axios from 'axios';
 import { Button } from 'antd';
-import { toast } from 'react-hot-toast'; // Import toast if using react-toastify
+import { toast } from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CartDetails = () => {
     const URL1 = "http://localhost:8000/api/cart/cartItems";
@@ -12,6 +13,7 @@ const CartDetails = () => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const GetCartItems = async () => {
         try {
@@ -20,8 +22,6 @@ const CartDetails = () => {
                 throw new Error("User not logged in");
             }
             const response = await axios.get(`${URL1}/${userId}`);
-
-            // Check if response data is valid
             if (response.data && Array.isArray(response.data.items)) {
                 setCartItems(response.data.items);
             } else {
@@ -50,6 +50,19 @@ const CartDetails = () => {
         }
     };
 
+    const handleCheckout = (product) => {
+        const checkoutData = {
+            totalPrice: (product.productId.price * product.quantity).toFixed(2),
+            items: [{
+                name: product.productId.name,
+                quantity: product.quantity,
+                price: product.productId.price
+            }]
+        };
+
+        navigate('/dashboard/user/checkout', { state: checkoutData });
+    };
+
     useEffect(() => {
         GetCartItems();
     }, [auth?.user?._id]);
@@ -59,6 +72,16 @@ const CartDetails = () => {
 
     if (loading) return <p className="text-center">Loading...</p>;
     if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+
+    // Prepare data for "Checkout All"
+    const checkoutAllData = {
+        totalPrice: totalPrice.toFixed(2),
+        items: cartItems.map(item => ({
+            name: item.productId.name,
+            quantity: item.quantity,
+            price: item.productId.price
+        }))
+    };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen flex flex-col">
@@ -79,27 +102,34 @@ const CartDetails = () => {
                                 <h2 className="text-xl font-semibold mb-2">{item.productId.name}</h2>
                                 <p className="text-gray-700 mb-2">Quantity: {item.quantity}</p>
                                 <p className="text-gray-700 mb-4">Price: ${item.productId.price}</p>
-                                <Button
-                                    type="primary"
-                                    className="mt-auto mb-2"
-                                    onClick={() => {/* Handle checkout for this item */ }}
-                                >
-                                    Checkout
-                                </Button>
+
                                 <Button
                                     type="danger"
                                     onClick={() => deleteCartItem(item.productId._id)}
+                                    className="mb-2"
                                 >
                                     Delete
+                                </Button>
+                                <Button
+                                    type="primary"
+                                    onClick={() => handleCheckout(item)}
+                                >
+                                    Checkout This Item
                                 </Button>
                             </div>
                         ))}
                     </div>
                     <div className="flex justify-between items-center mt-6">
                         <p className="text-lg font-semibold">Total Price: ${totalPrice.toFixed(2)}</p>
-                        <Button type="primary" className="ml-auto">
-                            Checkout All
-                        </Button>
+                        <Link
+                            to="/dashboard/user/checkout"
+                            state={checkoutAllData}
+                            className="ml-auto"
+                        >
+                            <Button type="primary">
+                                Checkout All
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             )}
