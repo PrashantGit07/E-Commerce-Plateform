@@ -80,6 +80,7 @@ export const Login = async (req, res) => {
             success: true,
             message: "Successfully logged in",
             user: {
+                _id: user._id,
                 name: user.name,
                 email: user.email,
                 address: user.address,

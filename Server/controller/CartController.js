@@ -53,7 +53,8 @@ export const GetCartItems = async (req, res) => {
             res.status(200).json({
                 status: 200,
                 message: "Cart items fetched successfully",
-                cart
+                items: cart.items,
+                totalItems: cart.length
             })
         }
         else {
