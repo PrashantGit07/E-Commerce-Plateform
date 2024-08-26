@@ -6,10 +6,13 @@ import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
 import { useCart } from '../../Context/CartContext';
 
+
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [auth, setAuth] = useAuth();
-    const [cart] = useCart()
+    const { cart } = useCart()
+    const cartItemCount = cart?.items?.length
+    console.log(cartItemCount)
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -69,6 +72,11 @@ const Header = () => {
         setDropdownOpen(false);
     };
 
+
+
+
+
+
     return (
         <nav className='fixed top-0 left-0 right-0 h-16 bg-blue-500 rounded-md text-white w-full flex items-center justify-between px-4 z-50 shadow-blue-600 shadow-md'>
             <img src={logo} className="w-12 h-auto cursor-pointer" alt="Logo" onClick={() => navigate("/")} />
@@ -126,7 +134,7 @@ const Header = () => {
                     )}
                 </div>
 
-                <NavLink to="/cartPage" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart {cart?.length} </NavLink>
+                <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'}>Cart({cartItemCount}) </NavLink>
             </div>
 
             <div className='md:hidden flex items-center'>
@@ -186,7 +194,7 @@ const Header = () => {
                             </div>
                         )}
                     </div>
-                    <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Cart(0)</NavLink>
+                    <NavLink to="dashboard/user/cart" className={({ isActive }) => isActive ? 'text-white' : 'text-gray-300'} onClick={() => setIsOpen(false)}>Cart ({cartItemCount}) </NavLink>
                 </div>
             )}
         </nav>

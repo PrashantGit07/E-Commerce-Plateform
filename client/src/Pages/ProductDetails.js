@@ -6,14 +6,16 @@ import { Card, Button } from "antd"
 import { DoubleLeftOutlined } from "@ant-design/icons"
 import { useNavigate } from 'react-router-dom';
 import { toast, Toaster } from "react-hot-toast"
-import { useCart } from '../Context/CartContext';
+import { AddToCart } from '../Apis/CartApi';
+import { useAuth } from '../Context/AuthContext';
+//import { useCart } from '../Context/CartContext';
 const ProductDetails = () => {
     const [product, setProduct] = useState({ _id: '', name: '', description: '', price: '', quantity: '' });
-
+    const [auth] = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
     const [selectedQuantity, setSelectedQuantity] = useState(1);
-    const [cart, setCart] = useCart()
+    //const [cart, setCart] = useCart()
     const [similarProduct, setSimilarProduct] = useState([])
     const params = useParams();
 
@@ -30,6 +32,7 @@ const ProductDetails = () => {
 
                 setProduct(response?.data?.product);
                 getSimilarProduct(response?.data?.product?._id, response?.data?.product?.category?._id)
+                console.log(response?.data?.product?.category?._id)
             }
         } catch (e) {
             console.log(e);
@@ -74,6 +77,26 @@ const ProductDetails = () => {
         }
     }
 
+
+
+    const handleAddToCart = async () => {
+        if (!auth?.user) {
+            toast.error("You must be logged in to add products to the cart.");
+            return;
+        }
+
+        try {
+            const response = await AddToCart(auth.user._id, product._id, selectedQuantity, product?.category?._id);
+
+            console.log(auth.user._id, product._id, selectedQuantity, product?.category?._id)
+            toast.success("Added products to the cart")
+        } catch (e) {
+            console.error(e);
+            toast.error("An error occurred while adding to the cart.");
+        }
+    };
+
+
     return (
         <div className="p-6 bg-gray-100 h-screen">
             <Toaster />
@@ -114,11 +137,7 @@ const ProductDetails = () => {
                         </div>
                         <button
                             className="w-32 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                            onClick={() => {
-                                setCart([...cart, product, selectedQuantity])
-                                toast.success("product added successfully")
-                            }}
-
+                            onClick={handleAddToCart}
                         >
                             Add to Cart
                         </button>

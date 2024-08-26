@@ -29,10 +29,11 @@ const Login = () => {
 
             if (response.status === 200 || response.status === 201) {
                 setFormData({ email: '', password: '' });
-
+                console.log(response?.data?.user._id)
                 setAuth({
                     ...auth,
                     user: response.data.user,
+
                     token: response.data.token,
                 });
                 localStorage.setItem('auth', JSON.stringify({
