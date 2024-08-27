@@ -1,6 +1,6 @@
 import express from "express"
 const router = express.Router()
 
-router.post('/make-payment', makePayment)
+// router.post('/make-payment', makePayment)
 
 export default router

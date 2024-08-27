@@ -9,6 +9,7 @@ import cartRoute from "./routes/CartRoutes.js"
 import bodyParser from "body-parser";
 import cors from "cors"
 import payment from "./routes/PaymentRoutes.js"
+import order from "./routes/OrderRoutes.js"
 dotenv.config();
 //rest objects
 
@@ -30,6 +31,7 @@ app.use('/api/category', categoryRoute)
 app.use('/api/product', ProductRoute);
 app.use('/api/cart', cartRoute)
 app.use('/api/payment/make-payment', payment)
+app.use('/api/order', order)
 app.get('/', (req, res) => {
     res.send({
         message: "Welcome to the My Project"

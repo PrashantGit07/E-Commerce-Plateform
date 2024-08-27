@@ -1,5 +1,5 @@
 import express from "express"
-import { ForgotPassword, Login, Register } from "../controller/Register.js"
+import { ForgotPassword, Login, Register, UpdateProfile } from "../controller/Register.js"
 import { AdminAccess, testController, VerifyToken } from "../middlewares/AuthMiddleware.js"
 
 const router = express.Router()
@@ -18,4 +18,6 @@ router.get('/user-auth', VerifyToken, (req, res) => {
 router.get('/admin-auth', VerifyToken, (req, res) => {
     res.status(200).send({ ok: true });
 })
+
+router.put("/update-profile", VerifyToken, UpdateProfile)
 export default router

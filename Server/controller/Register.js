@@ -127,3 +127,43 @@ export const ForgotPassword = async (req, res) => {
         res.status(500).send({ error: "Internal Server Error" });
     }
 }
+
+
+
+
+
+export const UpdateProfile = async (req, res) => {
+    try {
+        const { name, address, phone, password } = req.body
+        if (!name || !address || !phone || !password) {
+            res.status(400).send({ error: "Please enter required fields" })
+        }
+
+        const user = await User.findById(req.user._id)
+        if (!user) {
+            res.status(404).send({ error: "User not found" })
+        }
+
+        if (password && password.length < 0) {
+            res.status(400).send({ error: "Password should be at least 6 characters long" })
+        }
+
+        const hashedPassword = password ? await hashPassword(password) : undefined
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, {
+            name: name || user.name,
+            address: address || user.address,
+            phone: phone || user.phone,
+            password: hashedPassword
+        }, { new: true })
+
+        res.status(200).send({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+}
