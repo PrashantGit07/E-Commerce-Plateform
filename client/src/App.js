@@ -26,6 +26,7 @@ import ProductDetails from "./Pages/ProductDetails.js";
 import CategoryProduct from "./Pages/CategoryProduct.js";
 import CartDetails from "./Pages/CartDetails.js";
 import Checkout from "./Pages/Checkout.js";
+import UpdateProfile from "./Pages/user/UpdateProfile.js";
 
 
 
@@ -54,6 +55,7 @@ function App() {
             <Route path="user/orders" element={<UserOrders />} />
             <Route path="user/cart" element={<CartDetails />} />
             <Route path="user/checkout" element={<Checkout />} />
+            <Route path="user/update-profile" element={<UpdateProfile />} ></Route>
           </Route>
           <Route path="/forgot-password" element={<ForgotPassword />} />
 

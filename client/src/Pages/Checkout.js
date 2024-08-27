@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Input, Form } from 'antd';
-import { toast } from 'react-hot-toast';
-
+import { toast, Toaster } from 'react-hot-toast';
+import axios from 'axios';
 const Checkout = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -10,14 +10,50 @@ const Checkout = () => {
     // Access totalPrice and items from state
     const { totalPrice, items } = location.state || {};
 
-    const handleSubmit = (values) => {
-        console.log('Form values:', values);
-        toast.success('Order placed successfully!');
-        navigate('/dashboard/user/orders'); // Redirect after success
+    const getToken = () => {
+        const authData = localStorage.getItem('auth');
+        return authData ? JSON.parse(authData).token : '';
     };
+
+    const token = getToken();
+
+    const handleSubmit = async (values) => {
+        try {
+            // Modify items to include product IDs and names
+            console.log('Items:', items);
+
+            const modifiedItems = items.map(item => ({
+
+                name: item.name, // Include the name of the product
+                quantity: item.quantity,
+                price: item.price * item.quantity, // Ensure price is total for this item
+            }));
+            console.log('Modified Items:', modifiedItems);
+
+            const payload = {
+                items: modifiedItems,
+                totalPrice,
+                ...values,
+            };
+
+            const response = await axios.post('http://localhost:8000/api/order/create', payload, {
+                headers: {
+                    Authorization: token,
+                },
+            });
+
+            toast.success('Order placed successfully!');
+            navigate('/dashboard/user/orders'); // Redirect after success
+        } catch (error) {
+            console.error('Error placing order:', error);
+            toast.error('Failed to place order.');
+        }
+    };
+
 
     return (
         <div className='flex justify-center items-center min-h-screen p-4'>
+            <Toaster />
             <div className='bg-white shadow-lg rounded-lg p-6 w-full max-w-md mt-9'>
                 <h2 className='text-2xl font-semibold mb-4 text-center'>Checkout</h2>
 

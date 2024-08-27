@@ -60,7 +60,11 @@ const CartDetails = () => {
             }]
         };
 
+        // Navigate to the checkout page with checkout data
         navigate('/dashboard/user/checkout', { state: checkoutData });
+
+        // Remove the checked-out item from the cartItems state
+        setCartItems(cartItems.filter(item => item.productId._id !== product.productId._id));
     };
 
     useEffect(() => {
