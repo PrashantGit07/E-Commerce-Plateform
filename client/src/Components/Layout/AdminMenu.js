@@ -17,7 +17,7 @@ const AdminMenu = () => {
                 </li>
                 <li>
                     <NavLink to="/dashboard/admin/users" className="block px-3 py-2 text-gray-700 hover:text-black">
-                        User Details
+                        User Order Details
                     </NavLink>
                 </li>
 
