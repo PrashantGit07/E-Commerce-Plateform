@@ -4,7 +4,9 @@ import {
     getOrder,
     getUserOrders,
     getAllOrders,
-    confirmOrder
+    confirmOrder,
+    CancelOrder,
+    DeleteOrderEntryByAdmin
 } from '../controller/OrderController.js';
 import { AdminAccess, VerifyToken } from '../middlewares/AuthMiddleware.js';
 const router = express.Router();
@@ -18,4 +20,6 @@ router.get('/order/:orderId', VerifyToken, getOrder); // User fetches a specific
 router.get('/all', VerifyToken, AdminAccess, getAllOrders); // Admin fetches all orders
 router.put('/confirm/:orderId', VerifyToken, AdminAccess, confirmOrder); // Admin confirms an order
 
+router.put("/cancel/:orderId", VerifyToken, CancelOrder)
+router.delete("/delete/:orderId", VerifyToken, AdminAccess, DeleteOrderEntryByAdmin)
 export default router;
